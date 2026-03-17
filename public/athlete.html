@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMNI-COACH — אימון אישי</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#09090f; --s1:#111118; --s2:#18181f; --s3:#22222c;
+  --b1:#2a2a3d; --b2:#3a3a55;
+  --ac:#7c6fff; --ac2:#ff6b8a; --ac3:#3de87a; --ac4:#64b5f6;
+  --tx:#eeeef8; --tx2:#9090b8; --tx3:#5a5a80;
+  --glow:rgba(124,111,255,0.25);
+  --f:'Heebo',sans-serif; --fm:'Space Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:var(--f);min-height:100vh;}
+
+/* NAV */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;border-bottom:1px solid var(--b1);
+  background:rgba(9,9,15,0.92);backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:99;
+}
+.nav-logo{font-family:var(--fm);font-size:15px;color:var(--ac);letter-spacing:3px;}
+.nav-logo small{display:block;color:var(--tx3);font-size:10px;margin-top:1px;}
+.nav-link{
+  color:var(--tx2);font-size:13px;padding:7px 14px;border-radius:7px;
+  text-decoration:none;border:1px solid transparent;transition:all .2s;
+}
+.nav-link:hover{color:var(--tx);border-color:var(--b1);}
+
+/* HERO */
+.hero{
+  padding:64px 24px 48px;text-align:center;
+  background:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(124,111,255,0.1) 0%,transparent 70%);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:20px;font-size:11px;font-family:var(--fm);
+  letter-spacing:2px;border:1px solid var(--b2);color:var(--tx2);
+  margin-bottom:20px;background:var(--s1);
+}
+.hero h1{font-size:clamp(30px,5.5vw,58px);font-weight:900;line-height:1.05;margin-bottom:14px;}
+.hero h1 em{color:var(--ac);font-style:normal;}
+.hero p{color:var(--tx2);font-size:15px;max-width:420px;margin:0 auto;}
+
+/* FORM */
+.form-page{max-width:700px;margin:0 auto;padding:20px 18px 80px;}
+
+.section{
+  background:var(--s1);border:1px solid var(--b1);border-radius:14px;
+  padding:22px;margin-bottom:14px;transition:border-color .2s;
+}
+.section:focus-within{border-color:rgba(124,111,255,0.4);}
+
+.sec-title{
+  font-size:10px;font-family:var(--fm);color:var(--ac);
+  letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b1);
+}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:540px){.g2,.g3{grid-template-columns:1fr;}}
+
+.f{display:flex;flex-direction:column;gap:5px;}
+.f label{font-size:11px;color:var(--tx2);}
+.f input,.f select{
+  background:var(--bg);border:1px solid var(--b1);color:var(--tx);
+  padding:9px 11px;border-radius:8px;font-family:var(--f);font-size:14px;
+  transition:all .2s;appearance:none;-webkit-appearance:none;
+}
+.f input:focus,.f select:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 2px var(--glow);}
+.f select option{background:var(--s2);}
+
+.range-wrap{display:flex;align-items:center;gap:10px;margin-top:2px;}
+.range-wrap input[type=range]{flex:1;accent-color:var(--ac);height:4px;cursor:pointer;}
+.rv{font-family:var(--fm);font-size:15px;font-weight:700;color:var(--ac);min-width:26px;text-align:center;}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.chip{
+  padding:5px 12px;border-radius:14px;font-size:12px;cursor:pointer;
+  border:1px solid var(--b1);background:var(--bg);color:var(--tx2);
+  transition:all .15s;user-select:none;
+}
+.chip.on{border-color:var(--ac);background:rgba(124,111,255,0.1);color:var(--ac);}
+.chip:hover:not(.on){border-color:var(--b2);color:var(--tx);}
+
+.btn-go{
+  width:100%;padding:17px;background:var(--ac);color:#fff;
+  border:none;border-radius:12px;font-size:16px;font-weight:700;
+  font-family:var(--f);cursor:pointer;transition:all .25s;margin-top:4px;
+  letter-spacing:.5px;
+}
+.btn-go:hover:not(:disabled){background:#9088ff;transform:translateY(-2px);box-shadow:0 10px 30px var(--glow);}
+.btn-go:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* LOADING */
+#loader{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(9,9,15,0.97);align-items:center;justify-content:center;
+  flex-direction:column;gap:18px;
+}
+#loader.on{display:flex;}
+.loader-ring{
+  width:60px;height:60px;border-radius:50%;
+  border:3px solid var(--b1);border-top-color:var(--ac);
+  animation:spin .85s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-txt{font-family:var(--fm);color:var(--ac);font-size:12px;letter-spacing:2px;}
+.loader-sub{color:var(--tx2);font-size:12px;text-align:center;max-width:240px;line-height:1.6;}
+.loader-steps{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.loader-step{font-size:11px;color:var(--tx3);transition:color .3s;}
+.loader-step.cur{color:var(--ac3);}
+
+/* WORKOUT VIEW */
+.wo-page{max-width:740px;margin:0 auto;padding:24px 18px 80px;}
+
+.back{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 16px;background:var(--s2);color:var(--tx);
+  border:1px solid var(--b1);border-radius:8px;cursor:pointer;
+  font-size:13px;font-family:var(--f);margin-bottom:18px;
+  transition:all .2s;
+}
+.back:hover{border-color:var(--ac);color:var(--ac);}
+
+.wo-head{
+  background:linear-gradient(135deg,var(--s1),rgba(124,111,255,0.07));
+  border:1px solid var(--b1);border-radius:16px;padding:22px;margin-bottom:14px;
+}
+.st-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 11px;border-radius:16px;font-size:10px;font-family:var(--fm);
+  letter-spacing:1px;margin-bottom:10px;
+}
+.st-APPROVED{background:rgba(61,232,122,0.08);color:var(--ac3);border:1px solid rgba(61,232,122,0.2);}
+.st-PEAK{background:rgba(255,107,138,0.08);color:var(--ac2);border:1px solid rgba(255,107,138,0.2);}
+.st-DELOAD{background:rgba(255,193,7,0.08);color:#ffc107;border:1px solid rgba(255,193,7,0.2);}
+.st-RECOVERY{background:rgba(124,111,255,0.08);color:var(--ac);border:1px solid rgba(124,111,255,0.2);}
+
+.wo-name{font-size:20px;font-weight:900;margin-bottom:3px;}
+.wo-sub{color:var(--tx2);font-size:12px;margin-bottom:12px;}
+.wo-kpis{display:flex;flex-wrap:wrap;gap:16px;}
+.kpi{display:flex;flex-direction:column;gap:2px;}
+.kpi-l{font-size:9px;color:var(--tx2);font-family:var(--fm);letter-spacing:1px;text-transform:uppercase;}
+.kpi-v{font-size:17px;font-weight:700;}
+
+.adjs{
+  background:var(--s1);border:1px solid var(--b1);border-radius:10px;
+  padding:12px 14px;margin-bottom:12px;
+}
+.adjs-lbl{font-size:9px;font-family:var(--fm);color:var(--tx2);letter-spacing:2px;margin-bottom:7px;}
+.adj{font-size:12px;color:var(--tx2);padding:2px 0;display:flex;gap:6px;align-items:flex-start;}
+.adj::before{content:'→';color:var(--ac);flex-shrink:0;}
+
+.ph-block{margin-bottom:12px;border:1px solid var(--b1);border-radius:12px;overflow:hidden;}
+.ph-hd{
+  display:flex;align-items:center;gap:8px;padding:11px 14px;
+  background:var(--s2);font-size:10px;font-family:var(--fm);
+  letter-spacing:2px;text-transform:uppercase;color:var(--tx2);
+}
+.dot{width:6px;height:6px;border-radius:50%;}
+.ph-warmup .dot{background:#ffc107;}
+.ph-main .dot{background:var(--ac3);}
+.ph-core .dot{background:var(--ac);}
+.ph-cooldown .dot{background:var(--ac4);}
+.ph-count{margin-right:auto;font-size:9px;color:var(--tx3);}
+
+.ex{
+  background:var(--s1);padding:14px;border-top:1px solid var(--b1);
+  transition:background .15s;
+}
+.ex:hover{background:var(--s2);}
+
+.ex-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;}
+.ex-left .ex-name{font-size:15px;font-weight:700;}
+.ex-left .ex-id{font-size:9px;color:var(--tx3);font-family:var(--fm);margin-top:2px;}
+.ex-pills{display:flex;gap:5px;flex-wrap:wrap;}
+.pill{
+  padding:4px 9px;border-radius:6px;font-size:11px;font-family:var(--fm);
+  background:var(--bg);border:1px solid var(--b1);white-space:nowrap;
+}
+.pill b{color:var(--ac);}
+
+.cues{display:flex;flex-direction:column;gap:5px;}
+.cue{padding:7px 10px;border-radius:6px;font-size:12px;line-height:1.5;border-right:2px solid transparent;}
+.cue-mind{background:rgba(61,232,122,0.04);border-right-color:var(--ac3);color:var(--tx);}
+.cue-breath{background:rgba(100,181,246,0.04);border-right-color:var(--ac4);color:var(--tx2);}
+.cue-tech{background:rgba(124,111,255,0.04);border-right-color:var(--ac);color:var(--tx2);}
+.cue-coach{background:rgba(255,107,138,0.04);border-right-color:var(--ac2);color:var(--tx);}
+.prescue{
+  padding:9px 12px;border-radius:7px;font-size:13px;font-weight:500;
+  background:rgba(124,111,255,0.06);border:1px solid rgba(124,111,255,0.15);
+  margin-bottom:8px;color:var(--tx);
+}
+.safety{
+  padding:9px 12px;border-radius:7px;font-size:12px;
+  background:rgba(255,107,138,0.06);border:1px solid rgba(255,107,138,0.2);
+  color:var(--ac2);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+
+.next-box{
+  background:linear-gradient(135deg,rgba(124,111,255,0.07),rgba(61,232,122,0.03));
+  border:1px solid var(--b1);border-radius:13px;padding:18px;margin-top:14px;
+}
+.next-lbl{font-size:9px;font-family:var(--fm);color:var(--tx2);letter-spacing:2px;margin-bottom:7px;}
+.next-focus{font-size:19px;font-weight:700;color:var(--ac);margin-bottom:6px;}
+.next-summary{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:8px;}
+.flag{font-size:12px;color:var(--tx3);padding:2px 0;display:flex;gap:6px;}
+.flag::before{content:'🚩';}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:18px;right:18px;z-index:600;
+  padding:11px 16px;border-radius:9px;font-size:12px;
+  background:var(--s2);border:1px solid var(--b1);
+  opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.ok{border-color:var(--ac3);color:var(--ac3);}
+.toast.err{border-color:var(--ac2);color:var(--ac2);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">OMNI-COACH<small>v6.2 · AI TRAINER</small></div>
+  <a href="/coach.html" class="nav-link">📊 למאמן →</a>
+</nav>
+
+<div id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-txt">OMNI-COACH</div>
+  <div class="loader-steps" id="loaderSteps">
+    <div class="loader-step" id="ls0">מנתח נתוני מוכנות...</div>
+    <div class="loader-step" id="ls1">בודק פציעות וסביבה...</div>
+    <div class="loader-step" id="ls2">מחשב תקציב CNS...</div>
+    <div class="loader-step" id="ls3">בוחר ומדרג תרגילים...</div>
+    <div class="loader-step" id="ls4">מכין cues מותאמים...</div>
+    <div class="loader-step" id="ls5">שומר ב-Supabase...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FORM VIEW -->
+<div id="formView">
+  <div class="hero">
+    <div class="hero-badge">⚡ OMNI-COACH v6.2</div>
+    <h1>האימון שלך,<br><em>מותאם בדיוק לך</em></h1>
+    <p>10 שכבות אלגוריתם · מבוסס ראיות · בעברית</p>
+  </div>
+
+  <div class="form-page">
+
+    <div class="section">
+      <div class="sec-title">פרטים אישיים</div>
+      <div class="g2">
+        <div class="f"><label>שם מלא</label><input id="fn" placeholder="ישראל ישראלי"></div>
+        <div class="f"><label>גיל</label><input id="fa" type="number" placeholder="30" min="12" max="90"></div>
+        <div class="f"><label>משקל (ק"ג)</label><input id="fw" type="number" placeholder="70"></div>
+        <div class="f"><label>מין ביולוגי</label>
+          <select id="fs"><option value="male">זכר</option><option value="female">נקבה</option><option value="other">אחר</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">הגדרות אימון</div>
+      <div class="g2" style="margin-bottom:13px;">
+        <div class="f"><label>רמה</label>
+          <select id="fl"><option value="beginner">מתחיל</option><option value="intermediate" selected>בינוני</option><option value="advanced">מתקדם</option></select>
+        </div>
+        <div class="f"><label>מטרה עיקרית</label>
+          <select id="fg">
+            <option value="fat_loss">ירידה בשומן</option>
+            <option value="hypertrophy" selected>עלייה במסה</option>
+            <option value="strength">כוח</option>
+            <option value="general_fitness">כושר כללי</option>
+            <option value="endurance">סיבולת</option>
+            <option value="recomp">רקומפ</option>
+          </select>
+        </div>
+      </div>
+      <div class="f" style="margin-bottom:13px;">
+        <label>זמן זמין — <span id="ftv" style="color:var(--ac)">45</span> דקות</label>
+        <div class="range-wrap">
+          <input type="range" id="ft" min="15" max="90" step="5" value="45" oninput="ftv.textContent=this.value">
+        </div>
+      </div>
+      <div class="f" style="margin-bottom:13px;">
+        <label>מיקום</label>
+        <div class="chips" id="cloc">
+          <div class="chip on" data-v="gym">🏋️ חדר כושר</div>
+          <div class="chip" data-v="home">🏠 בית</div>
+          <div class="chip" data-v="outdoor">🌳 חוץ</div>
+          <div class="chip" data-v="office">💼 משרד</div>
+        </div>
+      </div>
+      <div class="f">
+        <label>ציוד זמין</label>
+        <div class="chips" id="ceq">
+          <div class="chip on" data-v="barbell">מוט</div>
+          <div class="chip on" data-v="dumbbell">משקולות</div>
+          <div class="chip on" data-v="machine">מכונות</div>
+          <div class="chip on" data-v="cable">פולי</div>
+          <div class="chip on" data-v="kettlebell">קטלבל</div>
+          <div class="chip on" data-v="bodyweight">משקל גוף</div>
+          <div class="chip" data-v="resistance_band">גומיה</div>
+          <div class="chip" data-v="pullup_bar">מוט מתח</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">פציעות ומגבלות</div>
+      <div class="chips" id="cinj">
+        <div class="chip on" data-v="none">✓ ללא פציעות</div>
+        <div class="chip" data-v="knee">ברך</div>
+        <div class="chip" data-v="lower_back">גב תחתון</div>
+        <div class="chip" data-v="shoulder">כתף</div>
+        <div class="chip" data-v="wrist">כף יד</div>
+        <div class="chip" data-v="hip">ירך</div>
+        <div class="chip" data-v="neck">צוואר</div>
+        <div class="chip" data-v="ankle">קרסול</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">מוכנות להיום</div>
+      <div class="g3" style="margin-bottom:13px;">
+        <div class="f">
+          <label>תחושה — <span id="ffv" style="color:var(--ac)">7</span>/10</label>
+          <div class="range-wrap"><input type="range" id="ff" min="1" max="10" value="7" oninput="ffv.textContent=this.value"></div>
+        </div>
+        <div class="f">
+          <label>שינה — <span id="fslv" style="color:var(--ac)">7</span>ש'</label>
+          <div class="range-wrap"><input type="range" id="fsl" min="3" max="12" step="0.5" value="7" oninput="fslv.textContent=this.value"></div>
+        </div>
+        <div class="f">
+          <label>סטרס — <span id="fstv" style="color:var(--ac)">4</span>/10</label>
+          <div class="range-wrap"><input type="range" id="fst" min="1" max="10" value="4" oninput="fstv.textContent=this.value"></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="f"><label>תזונה לפני אימון</label>
+          <select id="fnu"><option value="fasted">צום</option><option value="adequate" selected>סביר</option><option value="fueled">טעון מלא</option></select>
+        </div>
+        <div class="f"><label>ימים מאז אימון אחרון</label>
+          <input id="fd" type="number" placeholder="1" min="0" max="90" value="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">אימון אחרון</div>
+      <div class="g2">
+        <div class="f">
+          <label>שרירים שעבדו</label>
+          <div class="chips" id="clm">
+            <div class="chip on" data-v="legs">רגליים</div>
+            <div class="chip" data-v="chest">חזה</div>
+            <div class="chip" data-v="back">גב</div>
+            <div class="chip" data-v="shoulders">כתפיים</div>
+            <div class="chip" data-v="arms">ידיים</div>
+            <div class="chip" data-v="core">ליבה</div>
+          </div>
+        </div>
+        <div class="f">
+          <label>עצימות</label>
+          <select id="fli"><option value="low">נמוכה</option><option value="moderate" selected>בינונית</option><option value="high">גבוהה</option></select>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-go" id="genBtn" onclick="generate()">
+      ⚡ צור תוכנית אימון עם OMNI-COACH
+    </button>
+
+  </div>
+</div><!-- /formView -->
+
+<!-- WORKOUT VIEW -->
+<div id="woView" style="display:none">
+  <div class="wo-page" id="woContent"></div>
+</div>
+
+<script>
+const SUPA_URL = 'https://sbjpwzfmnjqpqzwcmasj.supabase.co';
+const SUPA_KEY = 'sb_publishable_933E3dFux_-fmizVmnzVfA_tSZDhtwE';
+
+// CHIPS
+document.querySelectorAll('.chips').forEach(g => {
+  const multi = ['ceq','cinj','clm'].includes(g.id);
+  const single = ['cloc'].includes(g.id);
+  g.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      if (single) { g.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); }
+      else { c.classList.toggle('on'); }
+    });
+  });
+});
+
+function chips(id) {
+  return [...document.querySelectorAll(`#${id} .chip.on`)].map(c=>c.dataset.v).join(', ') || 'none';
+}
+function chipOne(id) {
+  return document.querySelector(`#${id} .chip.on`)?.dataset.v || '';
+}
+
+// LOADER ANIMATION
+const steps = [
+  'מנתח נתוני מוכנות...',
+  'בודק פציעות וסביבה...',
+  'מחשב תקציב CNS...',
+  'בוחר ומדרג תרגילים...',
+  'מכין cues מותאמים...',
+  'שומר ב-Supabase...'
+];
+let loaderTimer, curStep=0;
+function startLoader() {
+  curStep=0;
+  document.querySelectorAll('.loader-step').forEach((el,i)=>{
+    el.classList.toggle('cur',i===0);
+  });
+  loaderTimer = setInterval(()=>{
+    curStep=(curStep+1)%steps.length;
+    document.querySelectorAll('.loader-step').forEach((el,i)=>{
+      el.classList.toggle('cur',i===curStep);
+    });
+  },1800);
+}
+function stopLoader(){ clearInterval(loaderTimer); }
+
+// UID
+function uid(name){
+  const k='omni_uid_'+name.replace(/\s+/g,'_').toLowerCase();
+  if(!localStorage.getItem(k)) localStorage.setItem(k,crypto.randomUUID());
+  return localStorage.getItem(k);
+}
+
+// GENERATE
+async function generate(){
+  const name = document.getElementById('fn').value || 'ספורטאי';
+  const weight = parseFloat(document.getElementById('fw').value)||70;
+  const height = 1.72;
+  const data = {
+    name, age:parseInt(document.getElementById('fa').value)||30,
+    weight, sex:document.getElementById('fs').value,
+    level:document.getElementById('fl').value,
+    goal:document.getElementById('fg').value,
+    available_time:parseInt(document.getElementById('ft').value),
+    location:chipOne('cloc'),
+    equipment:chips('ceq'),
+    injuries:chips('cinj'),
+    subjective_feel:parseInt(document.getElementById('ff').value),
+    sleep_hours:parseFloat(document.getElementById('fsl').value),
+    stress_level:parseInt(document.getElementById('fst').value),
+    nutrition_status:document.getElementById('fnu').value,
+    days_since_workout:parseInt(document.getElementById('fd').value)||1,
+    last_muscles:chips('clm'),
+    last_intensity:document.getElementById('fli').value,
+    bmi:+(weight/(height*height)).toFixed(1),
+    user_id:uid(name),
+  };
+
+  document.getElementById('loader').classList.add('on');
+  document.getElementById('genBtn').disabled=true;
+  startLoader();
+
+  try {
+    const res = await fetch('/api/generate-workout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    const json = await res.json();
+    if(!json.success) throw new Error(json.error||'שגיאה לא ידועה');
+    renderWorkout(json.workout, name);
+    toast('תוכנית נוצרה בהצלחה! ✓','ok');
+  } catch(e){
+    toast('שגיאה: '+e.message,'err');
+    console.error(e);
+  } finally {
+    document.getElementById('loader').classList.remove('on');
+    document.getElementById('genBtn').disabled=false;
+    stopLoader();
+  }
+}
+
+// RENDER
+function renderWorkout(w, name){
+  const m = w.session_metadata||{};
+  const p = w.post_workout_state_updates||{};
+  const stLbl={APPROVED:'מאושר',PEAK:'שיא',DELOAD:'הורדה',RECOVERY:'התאוששות'};
+  const phLbl={warmup:'חימום',main:'עיקרי',core:'ליבה',cooldown:'קירור'};
+
+  let h = `<button class="back" onclick="backToForm()">← חזרה לטופס</button>
+  <div class="wo-head">
+    <div class="st-badge st-${m.status||'APPROVED'}">● ${stLbl[m.status]||m.status||'מאושר'}</div>
+    <div class="wo-name">שלום ${name} 💪</div>
+    <div class="wo-sub">${m.microcycle_day||''} · ${m.environment||''} · ${m.format||''}</div>
+    <div class="wo-kpis">
+      ${m.total_estimated_time_mins?`<div class="kpi"><div class="kpi-l">זמן</div><div class="kpi-v">${m.total_estimated_time_mins}<small style="font-size:12px;font-weight:400;color:var(--tx2)"> דק'</small></div></div>`:''}
+      ${m.calculated_readiness_score?`<div class="kpi"><div class="kpi-l">מוכנות</div><div class="kpi-v">${m.calculated_readiness_score}<small style="font-size:12px;font-weight:400;color:var(--tx2)">/10</small></div></div>`:''}
+      ${m.rpe_cap?`<div class="kpi"><div class="kpi-l">RPE Max</div><div class="kpi-v">${m.rpe_cap}</div></div>`:''}
+      ${m.block_phase?`<div class="kpi"><div class="kpi-l">פאזה</div><div class="kpi-v" style="font-size:14px">${m.block_phase}</div></div>`:''}
+    </div>
+  </div>`;
+
+  if(m.system_adjustments?.length){
+    h+=`<div class="adjs"><div class="adjs-lbl">התאמות OMNI-COACH</div>`;
+    m.system_adjustments.forEach(a=>h+=`<div class="adj">${a}</div>`);
+    h+=`</div>`;
+  }
+
+  (w.phases||[]).forEach(ph=>{
+    if(!ph.exercises?.length) return;
+    h+=`<div class="ph-block ph-${ph.phase}">
+      <div class="ph-hd">
+        <div class="dot"></div>
+        ${phLbl[ph.phase]||ph.label||ph.phase}
+        <span class="ph-count">${ph.exercises.length} תרגילים</span>
+      </div>`;
+    ph.exercises.forEach(ex=>{
+      h+=`<div class="ex">`;
+      if(ex.safety_flag) h+=`<div class="safety">⚠️ ${ex.safety_flag}</div>`;
+      if(ex.prescriptive_cue) h+=`<div class="prescue">🎯 ${ex.prescriptive_cue}</div>`;
+      h+=`<div class="ex-top">
+        <div class="ex-left">
+          <div class="ex-name">${ex.he_name||ex.id||''}</div>
+          <div class="ex-id">${ex.id||''}</div>
+        </div>
+        <div class="ex-pills">`;
+      if(ex.sets) h+=`<div class="pill"><b>${ex.sets}</b> סטים</div>`;
+      if(ex.target_reps) h+=`<div class="pill"><b>${ex.target_reps}</b></div>`;
+      if(ex.target_weight_kg) h+=`<div class="pill"><b>${ex.target_weight_kg}</b>ק"ג</div>`;
+      if(ex.rest_sec) h+=`<div class="pill"><b>${ex.rest_sec}"</b> מנוחה</div>`;
+      h+=`</div></div><div class="cues">`;
+      if(ex.cue_muscle_mind) h+=`<div class="cue cue-mind">🧠 ${ex.cue_muscle_mind}</div>`;
+      if(ex.cue_breathing) h+=`<div class="cue cue-breath">💨 ${ex.cue_breathing}</div>`;
+      (ex.technique_cues||[]).forEach(c=>h+=`<div class="cue cue-tech">✓ ${c}</div>`);
+      if(ex.coaching_note) h+=`<div class="cue cue-coach">📝 ${ex.coaching_note}</div>`;
+      h+=`</div></div>`;
+    });
+    h+=`</div>`;
+  });
+
+  if(p.recommended_next_session_focus||p.coach_summary){
+    h+=`<div class="next-box">
+      <div class="next-lbl">אימון הבא מומלץ</div>
+      ${p.recommended_next_session_focus?`<div class="next-focus">📍 ${p.recommended_next_session_focus}</div>`:''}
+      ${p.coach_summary?`<div class="next-summary">${p.coach_summary}</div>`:''}
+      ${p.next_deload_eta_weeks?`<div style="font-size:11px;color:var(--tx3);font-family:var(--fm)">DELOAD בעוד ${p.next_deload_eta_weeks} שבועות</div>`:''}
+      ${(p.flags_for_review||[]).map(f=>`<div class="flag">${f}</div>`).join('')}
+    </div>`;
+  }
+
+  document.getElementById('woContent').innerHTML=h;
+  document.getElementById('formView').style.display='none';
+  document.getElementById('woView').style.display='block';
+  window.scrollTo(0,0);
+}
+
+function backToForm(){
+  document.getElementById('formView').style.display='block';
+  document.getElementById('woView').style.display='none';
+  window.scrollTo(0,0);
+}
+
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
