@@ -2,10 +2,8 @@
   "version": 2,
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/coach", "dest": "/public/coach.html" },
-    { "src": "/coach.html", "dest": "/public/coach.html" },
-    { "src": "/athlete", "dest": "/public/athlete.html" },
-    { "src": "/athlete.html", "dest": "/public/athlete.html" },
-    { "src": "/", "dest": "/public/athlete.html" }
+    { "src": "/coach", "dest": "/coach.html" },
+    { "src": "/coach.html", "dest": "/coach.html" },
+    { "src": "/", "dest": "/athlete.html" }
   ]
 }
